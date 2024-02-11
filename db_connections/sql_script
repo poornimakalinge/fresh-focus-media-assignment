@@ -1,0 +1,136 @@
+/* Create/drop databases and tables */
+CREATE DATABASE IF NOT EXISTS field_ticket_db;
+USE field_ticket_db;
+
+DROP TABLE IF EXISTS customers;
+DROP TABLE IF EXISTS jobs;
+DROP TABLE IF EXISTS locations;
+DROP TABLE IF EXISTS staff;
+DROP TABLE IF EXISTS positions;
+DROP TABLE IF EXISTS labours_uom;
+DROP TABLE IF EXISTS staff_rates;
+DROP TABLE IF EXISTS trucks;
+DROP TABLE IF EXISTS truck_uom;
+DROP TABLE IF EXISTS truck_rates;
+DROP TABLE IF EXISTS field_ticket_details;
+
+
+/*Table creation */
+-- Customers table
+CREATE TABLE customers (
+	customer_id INT(10) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	customer_name VARCHAR(50) NOT NULL
+);
+
+-- jobs table
+CREATE TABLE jobs (
+	job_id INT(10) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	job_name VARCHAR(50) NOT NULL,
+	customer_id int not null,
+   	FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+);
+
+-- locations table
+CREATE TABLE customer (
+	location_id INT(10) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	location_name VARCHAR(50) NOT NULL,
+	job_id int not null,
+   	FOREIGN KEY (job_id) REFERENCES jobs(job_id)
+);
+
+-- staff table
+CREATE TABLE staff (
+	staff_id INT(10) NOT NULL AUTO_INCREMENT,
+	staff_name VARCHAR(50) NOT NULL
+);
+
+-- positions table
+CREATE TABLE jobs (
+	pos_id INT(10) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	pos_name VARCHAR(50) NOT NULL,
+	staff_id int not null,
+   	FOREIGN KEY (staff_id) REFERENCES staff(staff_id)
+);
+
+-- labours_uom table
+CREATE TABLE labours_uom (
+    uom_id int AUTO_INCREMENT PRIMARY KEY,
+    uom VARCHAR(50) NOT NULL,
+    pos_id int not null,
+    FOREIGN key (pos_id) REFERENCES jobs(pos_id)
+);
+
+-- staff rates table
+CREATE TABLE staff_rates (
+    rate_id int AUTO_INCREMENT PRIMARY KEY,
+    reg_rate int not null,
+    ot_rate int not null,
+    uom_id int not null,
+    FOREIGN key (uom_id) REFERENCES labours_uom(uom_id)
+);
+
+-- trucks table
+CREATE TABLE trucks (
+	truck_id INT(10) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	truck_name VARCHAR(50) NOT NULL
+);
+
+-- truck mom table
+CREATE TABLE truck_uom (
+	uom_id INT(10) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	uom VARCHAR(50) NOT NULL,
+	truck_id int not null,
+	FOREIGN KEY (truck_id) REFERENCES trucks(truck_id)
+);
+
+-- truck rates table
+CREATE TABLE truck_rates (
+	rate_id INT(10) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	truck_rate INT(10) NOT NULL,
+	uom_id int not null,
+	FOREIGN KEY (uom_id) REFERENCES truck_uom(uom_id)
+);
+
+— field ticket details
+CREATE TABLE field_ticket_details (
+	ticket_id INT(10) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	customer_name VARCHAR(50) NOT NULL,
+	job_name VARCHAR(50) NOT NULL,
+	location_name VARCHAR(50) NOT NULL,
+	status VARCHAR(50) NOT NULL,
+	ordered_by VARCHAR(50) NOT NULL,
+	date date,
+	area_field VARCHAR(50) NOT NULL,
+	description VARCHAR(128) NOT NULL,
+	labour_subtotal INT(10) NOT NULL,
+	labours_Data JSON not null,
+	truck_subtotal INT(10) NOT NULL,
+	trucks_data JSON not null,
+	miscell_subtotal INT(10) NOT NULL,
+	miscellaneous_data JSON not null
+);
+
+// initial insertion of data into each table except filed_Ticket_details since the data would be added on FINISH button click.
+
+INSERT INTO `customers` (`customer_id`, `customer_name`) VALUES ('1', 'Pranesh'), ('2', 'Ashwini'), ('3', 'Pooja'), ('4', 'Adam');
+
+
+INSERT INTO `jobs` (`job_id`, `job_name`, `costumer_id`) VALUES ('1', 'Sr RPA Developer', '1'), ('2', 'RPA Tech Lead', '1'), ('3', 'Web developer', '2'), ('4', 'Data Engineer', '2'), ('5', 'Automation QA', '4'), ('6', 'Sr QA', '4'), ('7', 'Accountant', '3');
+
+INSERT INTO `locations` (`location_id`, `location_name`, `job_id`) VALUES ('1', 'Toronto, ON, CA', '1'), ('2', 'Calgary, AB, CA', '2'), ('3', 'Calgary, AB, CA', '1'), ('4', 'Bengaluru, KA, India', '3'), ('5', 'Calgary, AB, CA', '4'), ('6', 'Vancouver, BC, CA', '5'), ('7', 'Victoria, BC, CA', '6'), ('8', 'Dharwad, KA, India', '7'), ('9', 'Chikodi, KA, India', '7');
+
+INSERT INTO `staff` (`staff_id`, `staff_name`) VALUES ('1', 'Fresh Focus Media'), ('2', 'Stellaralgo'), ('3', 'Divum Corp');
+
+INSERT INTO `positions` (`pos_id`, `pos_name`, `staff_id`) VALUES ('1', 'Project Manager', '1'), ('2', 'Sr software developer', '1'), ('3', 'Jr software developer', '3'), ('4', 'Human resource service', '2'), ('5', 'Vice President of Software Development', '2'), ('6', 'Manager of Engineering', '3'), ('7', 'Director of data engineering', '1');
+
+INSERT INTO `labours_uom` (`uom_id`, `uom`, `pos_id`) VALUES ('1', 'Hourly', '1'), ('2', 'Fixed', '1'), ('3', 'Hourly', '2'), ('4', 'Hourly', '3'), ('5', 'Hourly', '4'), ('6', 'Hourly', '5'), ('7', 'Hourly', '6'), ('8', 'Hourly', '7'), ('9', 'Fixed', '2'), ('10', 'Fixed', '3'), ('11', 'Fixed', '4'), ('12', 'Fixed', '5'), ('13', 'Fixed', '6'), ('14', 'Fixed', '7');
+
+INSERT INTO `staff_rates` (`rate_id`, `reg_rate`, `ot_rate`, `uom_id`) VALUES ('1', '20', '25', '1'), ('2', '25', '30', '2'), ('3', '70', '75', '3'), ('4', '80', '85', '4'), ('5', '60', '65', '5'), ('6', '70', '72', '6'), ('7', '63', '65', '7'), ('8', '77', '80', '8'), ('9', '40', '45', '9'), ('10', '42', '47', '10'), ('11', '40', '42', '11'), ('12', '44', '48', '12'), ('13', '30', '35', '13'), ('14', '35', '40', '14');
+
+
+INSERT INTO `trucks` (`truck_id`, `truck_name`) VALUES ('1', '100 - Ford F150'), ('2', '105 - Nolan Larsen');
+
+INSERT INTO `truck_uom` (`uom_id`, `uom`, `truct_id`) VALUES ('1', 'Hourly', '1'), ('2', 'Fixed', '1'), ('3', 'Hourly', '2'), ('4', 'Fixed', '2');
+
+
+INSERT INTO `truck_rates` (`rate_id`, `truck_rate`, `uom_id`) VALUES ('1', '90', '1'), ('2', '100', '2'), ('3', '80', '3'), ('4', '70', '4');
