@@ -384,7 +384,6 @@ function submitFieldTicketForm() {
         url: '../db_connections/operations.php', // PHP script to handle the insertion
         data: serialized_details,
         success: function(response) {
-            debugger
             alert('Invoice generated!');
         },
         error: function(xhr, status, error) {
